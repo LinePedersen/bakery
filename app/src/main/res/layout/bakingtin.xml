@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
 
     <ImageView
@@ -16,47 +18,46 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/kitchen1" />
+        android:src="@drawable/kitchen" />
 
     <TextView
-        android:id="@+id/welcomecaption"
+        android:id="@+id/bakingtin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello, nice to meet you. I'm Pepper. I am so glad you are here. It's soon my birthday. I want to bake a cake for my friends, but I need some help. Can you help me?"
+        android:text="We need a baking tin"
         android:textColor="#000000"
-        android:textSize="26sp"
-        android:textAlignment="center"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.074"
+        app:layout_constraintVertical_bias="0.134"
         tools:ignore="HardcodedText" />
 
-
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="914dp"
-        android:layout_height="73dp"
-        android:text="Hej, dejligt at møde dig. Jeg er Pepper. Jeg er glad for, du er kommet. Jeg har snart fødeselsdag. Jeg vil gerne bage en kage til mine venner, men jeg har brug for hjælp. Kan du hjælpe dig?"
-        android:textAlignment="center"
+        android:id="@+id/danishbakingtin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vi har brug for en bageform"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcomecaption"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.184"
+        tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/yes"
+        android:id="@+id/next"
         android:layout_width="87dp"
         android:layout_height="42dp"
-        android:text="Yes"
+        android:text="@Next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.957"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.889" />
@@ -68,11 +69,22 @@
         android:text="Repeat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/kitchen"
-        app:layout_constraintHorizontal_bias="0.035"
+        app:layout_constraintHorizontal_bias="0.048"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.887" />
+        app:layout_constraintVertical_bias="0.889"
+        tools:ignore="HardcodedText" />
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="189dp"
+        android:layout_height="235dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/kitchen"
+        app:layout_constraintTop_toTopOf="@+id/kitchen"
+        app:layout_constraintVertical_bias="0.83"
+        android:src="@drawable/bakingtin" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

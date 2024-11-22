@@ -10,22 +10,16 @@ import android.widget.Button;
 //introduction to eggs
 public class introduction extends android.app.Activity{
 
-
-
     //goes from introduction to eggs
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.introduction);
         Button next = (Button) findViewById(R.id.next);
 
-        next.setOnClickListener(new View.OnClickListener(){
+        next.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent introduction = new Intent (introduction.this, eggs.class);
-                startActivity(introduction);
+                Intent eggs = new Intent(introduction.this, eggs.class);
+                startActivity(eggs);
             }
         });
-
-
-
-
     }}

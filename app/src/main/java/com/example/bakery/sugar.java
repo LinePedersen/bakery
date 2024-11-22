@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-//sugar to flour
-public class sugar extends android.app.Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class sugar extends AppCompatActivity{
+
+    //sugar to flour
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sugar);
@@ -14,14 +17,8 @@ public class sugar extends android.app.Activity {
 
         next.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Intent sugar = new Intent (sugar.this, flour.class);
+                Intent flour = new Intent (sugar.this, flour.class);
                 startActivity(flour);
             }
         });
-
-
-
-
-    }}
-
-}
+}}

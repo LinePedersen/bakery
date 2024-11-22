@@ -4,20 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
-//goes from eggs to sugar
-public class eggs extends android.app.Activity {
+//explantion to  addsugar
+public class explanation extends android.app.Activity {
+    //bowl to task explanation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.eggs);
+        setContentView(R.layout.explanation);
         Button next = (Button) findViewById(R.id.next);
 
         next.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Intent sugar = new Intent (eggs.this, sugar.class);
-                startActivity(sugar);
+                Intent addsugar= new Intent (explanation.this, addsugar.class);
+                startActivity(addsugar);
             }
         });
-
-
     }}

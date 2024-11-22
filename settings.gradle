@@ -10,7 +10,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'http://android.aldebaran.com/sdk/maven'
+            allowInsecureProtocol = true
+        }
     }
 }
+
+
+
 rootProject.name = "Bakery"
 include ':app'

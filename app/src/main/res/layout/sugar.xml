@@ -8,13 +8,15 @@
 
     <ImageView
         android:id="@+id/kitchen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*"
+        android:shrinkColumns="*"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/kitchen" />
+        android:src="@drawable/kitchen" />
 
     <TextView
         android:id="@+id/sugar"
@@ -73,7 +75,7 @@
         app:layout_constraintVertical_bias="0.889" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/sugar1"
         android:layout_width="186dp"
         android:layout_height="191dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +84,7 @@
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="@+id/kitchen"
         app:layout_constraintVertical_bias="0.687"
-        app:srcCompat="@drawable/sugar" />
+        android:src="@drawable/sugar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

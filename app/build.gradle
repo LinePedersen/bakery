@@ -13,6 +13,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -37,4 +38,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 	implementation 'com.aldebaran:qisdk:1.7.5'
 	implementation 'com.aldebaran:qisdk-design:1.7.5'
+
 }

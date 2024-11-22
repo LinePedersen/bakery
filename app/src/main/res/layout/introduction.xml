@@ -8,45 +8,46 @@
 
     <ImageView
         android:id="@+id/kitchen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*"
+        android:shrinkColumns="*"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/kitchen"
-        tools:layout_editor_absoluteX="0dp" />
+        android:src="@drawable/kitchen1" />
 
     <TextView
-        android:id="@+id/introductioncaption"
+        android:id="@+id/welcomecaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fantastic. Let's get started. This is my kitchen. First we need to to find the ingredients we need for the cake"
-        android:textAlignment="center"
+        android:text=" Fantastic, let's get started! This is my kitchen. First we need to to find the ingredients we need for the cake"
         android:textColor="#000000"
-        android:textSize="22sp"
+        android:textSize="26sp"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.08"
+        app:layout_constraintVertical_bias="0.074"
         tools:ignore="HardcodedText" />
 
+
     <TextView
-        android:id="@+id/danishintroduction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fantatisk. Lad os komme igang. Dette er mit køkken. Først skal vi finde de ingredienser, vi har brug for, for at lave kagen"
+        android:id="@+id/textView"
+        android:layout_width="914dp"
+        android:layout_height="73dp"
+        android:text="Fantatisk, lad os komme igang! Dette er mit køkken. Først skal vi finde de ingredienser vi har brug for til kagen"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.218"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toBottomOf="@+id/welcomecaption"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/next"
@@ -55,10 +56,10 @@
         android:text="Next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.957"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.891" />
+        app:layout_constraintVertical_bias="0.889" />
 
     <Button
         android:id="@+id/repeat"
@@ -67,11 +68,10 @@
         android:text="Repeat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/kitchen"
-        app:layout_constraintHorizontal_bias="0.048"
+        app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.889" />
-
+        app:layout_constraintVertical_bias="0.887" />
 
 
 

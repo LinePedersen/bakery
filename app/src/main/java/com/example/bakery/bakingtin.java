@@ -5,19 +5,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-//goes from eggs to sugar
-public class eggs extends android.app.Activity {
+//bakingtin to whisk
+public class bakingtin extends android.app.Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.eggs);
+        setContentView(R.layout.bakingtin);
         Button next = (Button) findViewById(R.id.next);
 
         next.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Intent sugar = new Intent (eggs.this, sugar.class);
-                startActivity(sugar);
+                Intent whisk = new Intent (bakingtin.this, whisk.class);
+                startActivity(whisk);
             }
         });
-
-
     }}
