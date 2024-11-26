@@ -5,7 +5,6 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,53 +14,45 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class addeggs extends AppCompatActivity {
+public class addflour extends android.app.Activity {
 
-    private ImageView eggs, bowl;
+    private ImageView flour, bowl;
     private TextView explanation;
-    private int wrongAttempts = 0;
-    private boolean isTransitioning = false; // Prevent multiple transitions
+    private int wrongAttempts = 0; // Counter for wrong attempts
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.addeggs);
+        setContentView(R.layout.addflour);
 
         // Initialize views
-        eggs = findViewById(R.id.eggs);
+        flour = findViewById(R.id.flour);
         bowl = findViewById(R.id.bowl);
         explanation = findViewById(R.id.explanation);
 
-        // Initialize touch and drag listeners
-        initializeDragAndDrop();
-    }
-
-    private void initializeDragAndDrop() {
-        // Set tags for draggable items
-        eggs.setTag("eggs");
+        // Set tags for views (if not already set in XML)
+        flour.setTag("flour");
+        findViewById(R.id.eggs).setTag("eggs");
         findViewById(R.id.sugar).setTag("sugar");
-        findViewById(R.id.flour).setTag("flour");
         findViewById(R.id.strawberries).setTag("strawberries");
         findViewById(R.id.chocolate).setTag("chocolate");
         findViewById(R.id.whisk).setTag("whisk");
         findViewById(R.id.bakingtin).setTag("bakingtin");
 
         // Set TouchListener for draggable items
-        setDraggableListeners(R.id.eggs, R.id.sugar, R.id.flour, R.id.strawberries, R.id.chocolate, R.id.whisk, R.id.bakingtin);
+        flour.setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.bakingtin).setOnTouchListener(new DragTouchListener());
 
         // Set DragListener for the target bowl
         bowl.setOnDragListener(new DragEventListener());
     }
 
-    private void setDraggableListeners(int... viewIds) {
-        for (int id : viewIds) {
-            View view = findViewById(id);
-            if (view != null) {
-                view.setOnTouchListener(new DragTouchListener());
-            }
-        }
-    }
-
+    // TouchListener for drag initiation
     private class DragTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -74,8 +65,8 @@ public class addeggs extends AppCompatActivity {
                         item);
 
                 // Create and start the drag
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(dragData, shadowBuilder, v, 0);
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(v);
+                v.startDrag(dragData, myShadow, v, 0); // Use startDrag for API 23
 
                 // Perform click for accessibility compliance
                 v.performClick();
@@ -85,67 +76,65 @@ public class addeggs extends AppCompatActivity {
         }
     }
 
+    // DragListener for handling drop events
     private class DragEventListener implements View.OnDragListener {
         @Override
         public boolean onDrag(View v, DragEvent event) {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
+                    // Accept drag only for plain text
                     return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setAlpha(0.5f);
+                    v.setAlpha(0.5f); // Highlight the target
                     return true;
 
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setAlpha(1.0f);
+                    v.setAlpha(1.0f); // Remove highlight
                     return true;
 
                 case DragEvent.ACTION_DROP:
+                    // Retrieve the dragged view's tag
                     View draggedView = (View) event.getLocalState();
                     String draggedTag = (String) draggedView.getTag();
 
-                    if ("eggs".equals(draggedTag)) {
-                        Toast.makeText(addeggs.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        navigateToWhisk();
+                    if ("flour".equals(draggedTag)) {
+                        // Correct item
+                        Toast.makeText(addflour.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        // Move to addstrawberries activity
+                        Intent intent = new Intent(addflour.this, addstrawberries.class);
+                        startActivity(intent);
                         return true;
                     } else {
+                        // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addeggs.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(addflour.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
 
                         if (wrongAttempts >= 3) {
                             explanation.setText("Let me help you!");
-                            autoDropEggs();
+                            autoDropFlour();
                         }
                         return false;
                     }
 
                 case DragEvent.ACTION_DRAG_ENDED:
-                    v.setAlpha(1.0f);
+                    v.setAlpha(1.0f); // Reset target highlight
                     return true;
 
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
     }
 
-    private void autoDropEggs() {
+    // Handle "auto-drop" by simulating the correct outcome
+    private void autoDropFlour() {
         new Handler().postDelayed(() -> {
-            if (!isTransitioning) {
-                Toast.makeText(addeggs.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                navigateToWhisk();
-            }
-        }, 2000);
-    }
-
-    private void navigateToWhisk() {
-        if (isTransitioning) return; // Prevent multiple transitions
-        isTransitioning = true;
-
-        Log.d("ActivityTransition", "Navigating to whisk1");
-        Intent intent = new Intent(addeggs.this, whisk1.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish(); // Close the current activity
+            // Directly call the success logic
+            Toast.makeText(addflour.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(addflour.this, addstrawberries.class);
+            startActivity(intent);
+        }, 2000); // Delay to simulate "helping"
     }
 }

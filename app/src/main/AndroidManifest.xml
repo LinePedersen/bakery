@@ -38,6 +38,12 @@
         <activity android:name=".addsugar"/>
         <activity android:name=".addeggs"/>
         <activity android:name=".whisk1"/>
+        <activity android:name=".addflour"/>
+        <activity android:name=".addstrawberries"/>
+        <activity android:name=".whisk2"/>
+        <activity android:name=".addchocolate"/>
+        <activity android:name=".whisk3"/>
+        <activity android:name=".addbakingtin"/>
 
     </application>
 

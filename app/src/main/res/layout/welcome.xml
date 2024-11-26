@@ -51,8 +51,8 @@
 
     <Button
         android:id="@+id/yes"
-        android:layout_width="87dp"
-        android:layout_height="42dp"
+        android:layout_width="135dp"
+        android:layout_height="60dp"
         android:text="Yes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,8 +63,8 @@
 
     <Button
         android:id="@+id/repeat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="135dp"
+        android:layout_height="60dp"
         android:text="Repeat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/kitchen"

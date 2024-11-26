@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,7 +22,7 @@
         android:id="@+id/explanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Now we are ready to start baking. To add the ingredients, put your finger on it and drag it to the bowl, and let go of your finger"
+        android:text="Can you put sugar in the bowl, please?"
         android:textColor="#000000"
         android:textSize="22sp"
         android:textAlignment="center"
@@ -39,7 +38,7 @@
         android:id="@+id/danishexplanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nu er vi klar til at bage. For at tilføje ingredienser, put din finger på det, træk det til skålen og giv slip med fingeren"
+        android:text="Kan du hælde sukker i skålen, tak? "
         android:textColor="#000000"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -51,29 +50,8 @@
         app:layout_constraintVertical_bias="0.222"
         tools:ignore="HardcodedText" />
 
-    <Button
-        android:id="@+id/next"
-        android:layout_width="135dp"
-        android:layout_height="60dp"
-        android:text="Next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.957"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.889" />
 
-    <Button
-        android:id="@+id/repeat"
-        android:layout_width="135dp"
-        android:layout_height="60dp"
-        android:text="Repeat"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/kitchen"
-        app:layout_constraintHorizontal_bias="0.035"
-        app:layout_constraintStart_toStartOf="@+id/kitchen"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.887" />
+
 
     <ImageView
         android:id="@+id/bowl"
