@@ -14,31 +14,42 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class addbakingtin extends android.app.Activity{
+public class cleanflour extends android.app.Activity {
 
-    private ImageView bowl, bakingtin;
+    private ImageView flour, box;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.addbakingtin);
+        setContentView(R.layout.cleanflour);
 
         // Initialize views
-        bowl = findViewById(R.id.bowl);
-        bakingtin = findViewById(R.id.bakingtin);
+        flour = findViewById(R.id.flour);
+        box = findViewById(R.id.box);
         explanation = findViewById(R.id.explanation);
 
         // Set tags for views (if not already set in XML)
-        bowl.setTag("bowl");
-        bakingtin.setTag("bakingtin");
+        flour.setTag("flour");
+        findViewById(R.id.eggs).setTag("eggs");
+        findViewById(R.id.sugar).setTag("sugar");
+        findViewById(R.id.strawberries).setTag("strawberries");
+        findViewById(R.id.chocolate).setTag("chocolate");
+        findViewById(R.id.whisk).setTag("whisk");
+        findViewById(R.id.bakingtin).setTag("bakingtin");
 
         // Set TouchListener for draggable items
-        bowl.setOnTouchListener(new DragTouchListener());
+        flour.setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
+        findViewById(R.id.bakingtin).setOnTouchListener(new DragTouchListener());
 
-        // Set DragListener for the target bakingtin
-        bakingtin.setOnDragListener(new DragEventListener());
+        // Set DragListener for the target box
+        box.setOnDragListener(new DragEventListener());
     }
 
     // TouchListener for drag initiation
@@ -87,23 +98,22 @@ public class addbakingtin extends android.app.Activity{
                     View draggedView = (View) event.getLocalState();
                     String draggedTag = (String) draggedView.getTag();
 
-                    if ("bowl".equals(draggedTag)) {
+                    if ("flour".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(addbakingtin.this, "Great! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to oven activity
-                        Intent intent = new Intent(addbakingtin.this, oven.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
+                        Toast.makeText(cleanflour.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        // Move to cleaneggs activity
+                        Intent intent = new Intent(cleanflour.this, cleaneggs.class);
                         startActivity(intent);
-                        finish(); // Ensure addbakingtin is removed from the stack
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addbakingtin.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(cleanflour.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
 
                         if (wrongAttempts >= 3) {
                             explanation.setText("Let me help you!");
-                            autoDropBowl();
+                            // Correct way to call autoDropFlour
+                            cleanflour.this.autoDropFlour();
                         }
                         return false;
                     }
@@ -113,21 +123,18 @@ public class addbakingtin extends android.app.Activity{
                     return true;
 
                 default:
-                    break;
+                    return false;
             }
-            return false;
         }
     }
 
     // Handle "auto-drop" by simulating the correct outcome
-    private void autoDropBowl() {
+    private void autoDropFlour() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(addbakingtin.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(addbakingtin.this, oven.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
+            Toast.makeText(cleanflour.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(cleanflour.this, cleaneggs.class);
             startActivity(intent);
-            finish(); // Ensure addbakingtin is removed from the back stack
         }, 2000); // Delay to simulate "helping"
     }
 }

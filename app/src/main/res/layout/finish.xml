@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/explanation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thank you for the help. Cannot wait showing the cake to my friends"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.134"
+        tools:ignore="HardcodedText" />
+
+
+    <ImageView
+        android:id="@+id/kitchen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="*"
+        android:shrinkColumns="*"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/kitchen" />
+
+
+    <ImageView
+        android:id="@+id/cake"
+        android:layout_width="219dp"
+        android:layout_height="155dp"
+        android:src="@drawable/cake"
+        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="@+id/kitchen"
+        app:layout_constraintTop_toTopOf="@+id/kitchen"
+        app:layout_constraintVertical_bias="0.695" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

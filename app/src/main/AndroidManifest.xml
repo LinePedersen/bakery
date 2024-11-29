@@ -44,7 +44,18 @@
         <activity android:name=".addchocolate"/>
         <activity android:name=".whisk3"/>
         <activity android:name=".addbakingtin"/>
-
+        <activity android:name=".oven"/>
+        <activity android:name=".finishcake"/>
+        <activity android:name=".cleanup"/>
+        <activity android:name=".cleanflour"/>
+        <activity android:name=".cleaneggs"/>
+        <activity android:name=".cleanwhisk"/>
+        <activity android:name=".cleansugar"/>
+        <activity android:name=".cleanbowl"/>
+        <activity android:name=".cleanchocolate"/>
+        <activity android:name=".cleanbakingtin"/>
+        <activity android:name=".cleanstrawberries"/>
+        <activity android:name=".cleankitchen"/>
     </application>
 
     <uses-feature android:name="com.softbank.hardware.pepper"/>

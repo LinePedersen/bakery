@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,7 +23,7 @@
         android:id="@+id/explanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Can you put strawberries in the bowl, please?"
+        android:text="Oh no! We made a huge mess while baking. Can you help med clean up?"
         android:textColor="#000000"
         android:textSize="22sp"
         android:textAlignment="center"
@@ -38,7 +39,7 @@
         android:id="@+id/danishexplanation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kan du hælde jordbær i skålen, tak? "
+        android:text="Årh nej! Vi har lavet et kæmpe rod, da vi bagte. Kan du hjælpe mig med at rydde det op?"
         android:textColor="#000000"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -50,19 +51,28 @@
         app:layout_constraintVertical_bias="0.222"
         tools:ignore="HardcodedText" />
 
-
-
+    <Button
+        android:id="@+id/yes"
+        android:layout_width="135dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:text="yes"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.887" />
 
     <ImageView
         android:id="@+id/bowl"
-        android:layout_width="188dp"
-        android:layout_height="96dp"
+        android:layout_width="114dp"
+        android:layout_height="62dp"
+        android:src="@drawable/bowl"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="@+id/kitchen"
-        app:layout_constraintVertical_bias="0.706"
-        android:src="@drawable/bowl" />
+        app:layout_constraintVertical_bias="0.406" />
 
     <ImageView
         android:id="@+id/bakingtin"
@@ -92,61 +102,73 @@
         android:id="@+id/eggs"
         android:layout_width="81dp"
         android:layout_height="89dp"
+        android:src="@drawable/eggs"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.178"
+        app:layout_constraintHorizontal_bias="0.956"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.695"
-        android:src="@drawable/eggs" />
+        app:layout_constraintVertical_bias="0.74" />
 
     <ImageView
         android:id="@+id/flour"
         android:layout_width="120dp"
         android:layout_height="158dp"
+        android:src="@drawable/flour"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.294"
+        app:layout_constraintHorizontal_bias="0.809"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.735"
-        android:src="@drawable/flour" />
+        app:layout_constraintVertical_bias="0.688" />
 
     <ImageView
         android:id="@+id/strawberries"
         android:layout_width="71dp"
         android:layout_height="82dp"
+        android:src="@drawable/strawberries"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/kitchen"
-        app:layout_constraintHorizontal_bias="0.923"
+        app:layout_constraintHorizontal_bias="0.233"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.685"
-        android:src="@drawable/strawberries" />
+        app:layout_constraintVertical_bias="0.722" />
 
     <ImageView
         android:id="@+id/sugar"
-        android:layout_width="124dp"
-        android:layout_height="151dp"
+        android:layout_width="91dp"
+        android:layout_height="119dp"
+        android:src="@drawable/sugar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.823"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.668"
-        android:src="@drawable/sugar" />
+        app:layout_constraintVertical_bias="0.385" />
 
     <ImageView
         android:id="@+id/whisk"
         android:layout_width="89dp"
         android:layout_height="139dp"
+        android:src="@drawable/whisk"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.68"
+        app:layout_constraintHorizontal_bias="0.382"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.774"
-        android:src="@drawable/whisk" />
+        app:layout_constraintVertical_bias="0.738" />
+
+    <ImageView
+        android:id="@+id/box"
+        android:layout_width="219dp"
+        android:layout_height="155dp"
+        android:src="@drawable/box"
+        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.58"
+        app:layout_constraintStart_toStartOf="@+id/kitchen"
+        app:layout_constraintTop_toTopOf="@+id/kitchen"
+        app:layout_constraintVertical_bias="0.73" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
