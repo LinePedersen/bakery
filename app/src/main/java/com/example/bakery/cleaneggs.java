@@ -10,15 +10,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class cleaneggs extends android.app.Activity {
+public class cleaneggs extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView eggs, box;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +32,10 @@ public class cleaneggs extends android.app.Activity {
         // Initialize views
         eggs = findViewById(R.id.eggs);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         eggs.setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
         findViewById(R.id.sugar).setTag("sugar");
         findViewById(R.id.strawberries).setTag("strawberries");
         findViewById(R.id.chocolate).setTag("chocolate");
@@ -41,7 +44,6 @@ public class cleaneggs extends android.app.Activity {
 
         // Set TouchListener for draggable items
         eggs.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
@@ -50,6 +52,36 @@ public class cleaneggs extends android.app.Activity {
 
         // Set DragListener for the target box
         box.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext; // Save the QiContext for later use
+
+        // Speak the initial instruction
+        String initialMessage = "Drag the eggs to the box to clean them.";
+        updateCaption(initialMessage);
+        sayText(initialMessage);
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null; // Clear QiContext when focus is lost
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     // TouchListener for drag initiation
@@ -100,20 +132,27 @@ public class cleaneggs extends android.app.Activity {
 
                     if ("eggs".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(cleaneggs.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to cleanwhisk activity
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage); // Update TextView
+                        sayText(successMessage); // Make Pepper say the message
+
+                        // Move to the next activity
                         Intent intent = new Intent(cleaneggs.this, cleanwhisk.class);
                         startActivity(intent);
+                        finish();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(cleaneggs.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage); // Update TextView
+                        sayText(failureMessage); // Make Pepper say the message
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
-                            // Correct way to call autoDropEggs
-                            cleaneggs.this.autoDropEggs();
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage); // Update TextView
+                            sayText(helpMessage); // Make Pepper say the message
+                            autoDropEggs(); // Simulate the correct action after 3 wrong attempts
                         }
                         return false;
                     }
@@ -123,18 +162,27 @@ public class cleaneggs extends android.app.Activity {
                     return true;
 
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
+    }
+
+    // Update the TextView content
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
     }
 
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropEggs() {
         new Handler().postDelayed(() -> {
-            // Directly call the success logic
-            Toast.makeText(cleaneggs.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage); // Update TextView
+            sayText(autoDropMessage); // Make Pepper say the message
+
             Intent intent = new Intent(cleaneggs.this, cleanwhisk.class);
             startActivity(intent);
+            finish();
         }, 2000); // Delay to simulate "helping"
     }
 }

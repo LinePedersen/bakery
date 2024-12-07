@@ -21,34 +21,41 @@
         android:src="@drawable/kitchen" />
 
     <TextView
-        android:id="@+id/bakingtin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="We need a baking tin"
+        android:id="@+id/caption"
+        android:layout_width="350dp"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_background"
+        android:gravity="center"
+        android:padding="18dp"
+        android:text="We need a bakingtin"
         android:textColor="#000000"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.095"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.134"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintVertical_bias="0.116" />
 
     <TextView
-        android:id="@+id/danishbakingtin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/danishcaption"
+        android:layout_width="350dp"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_background"
+        android:gravity="center"
+        android:padding="18dp"
         android:text="Vi har brug for en bageform"
         android:textColor="#000000"
-        android:textSize="18sp"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="@+id/kitchen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.909"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.184"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintVertical_bias="0.109" />
+
 
 
     <Button
@@ -56,6 +63,8 @@
         android:layout_width="135dp"
         android:layout_height="60dp"
         android:text="Next"
+        android:background="#77F1FF"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.957"
@@ -68,12 +77,16 @@
         android:layout_width="135dp"
         android:layout_height="60dp"
         android:text="Repeat"
+        android:background="#77F1FF"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/kitchen"
         app:layout_constraintHorizontal_bias="0.035"
         app:layout_constraintStart_toStartOf="@+id/kitchen"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.887" />
+
+
 
     <ImageView
         android:id="@+id/imageView2"

@@ -10,15 +10,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class addchocolate extends android.app.Activity{
+public class addchocolate extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView chocolate, bowl;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +32,7 @@ public class addchocolate extends android.app.Activity{
         // Initialize views
         chocolate = findViewById(R.id.chocolate);
         bowl = findViewById(R.id.bowl);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         chocolate.setTag("chocolate");
@@ -50,6 +54,36 @@ public class addchocolate extends android.app.Activity{
 
         // Set DragListener for the target bowl
         bowl.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext; // Save the QiContext for later use
+
+        // Speak the initial instruction
+        String initialMessage = "Drag the chocolate to the bowl to add it.";
+        updateCaption(initialMessage);
+        sayText(initialMessage);
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null; // Clear QiContext when focus is lost
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     // TouchListener for drag initiation
@@ -100,21 +134,27 @@ public class addchocolate extends android.app.Activity{
 
                     if ("chocolate".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(addchocolate.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to addbakingtin activity and clear previous activities
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage); // Update TextView
+                        sayText(successMessage); // Make Pepper say the message
+
+                        // Move to next activity
                         Intent intent = new Intent(addchocolate.this, whisk3.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
                         startActivity(intent);
-                        finish(); // Ensure addchocolate is removed from the stack
+                        finish();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addchocolate.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage); // Update TextView
+                        sayText(failureMessage); // Make Pepper say the message
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
-                            autoDropChocolate();
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage); // Update TextView
+                            sayText(helpMessage); // Make Pepper say the message
+                            autoDropChocolate(); // Simulate correct action
                         }
                         return false;
                     }
@@ -130,15 +170,21 @@ public class addchocolate extends android.app.Activity{
         }
     }
 
+    // Update the TextView content
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
+    }
+
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropChocolate() {
         new Handler().postDelayed(() -> {
-            // Directly call the success logic
-            Toast.makeText(addchocolate.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage); // Update TextView
+            sayText(autoDropMessage); // Make Pepper say the message
+
             Intent intent = new Intent(addchocolate.this, whisk3.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
             startActivity(intent);
-            finish(); // Ensure addchocolate is removed from the back stack
+            finish();
         }, 2000); // Delay to simulate "helping"
     }
 }

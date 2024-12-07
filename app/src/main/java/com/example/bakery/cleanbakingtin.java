@@ -5,20 +5,23 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 
-public class cleanbakingtin extends android.app.Activity {
+public class cleanbakingtin extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView bakingtin, box;
-    private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,28 +31,53 @@ public class cleanbakingtin extends android.app.Activity {
         // Initialize views
         bakingtin = findViewById(R.id.bakingtin);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
 
         // Set tags for views (if not already set in XML)
         bakingtin.setTag("bakingtin");
-        findViewById(R.id.bowl).setTag("bowl");
-        findViewById(R.id.eggs).setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
-        findViewById(R.id.whisk).setTag("whisk");
         findViewById(R.id.strawberries).setTag("strawberries");
-        findViewById(R.id.sugar).setTag("sugar");
 
         // Set TouchListener for draggable items
-        bakingtin.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.bowl).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
+        setDraggableListeners(R.id.bakingtin, R.id.strawberries);
 
         // Set DragListener for the target box
         box.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+
+        // Optionally, say instructions here if needed
+        sayText("Please place the baking tin into the box.");
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
+    }
+
+    private void setDraggableListeners(int... viewIds) {
+        for (int id : viewIds) {
+            View view = findViewById(id);
+            if (view != null) {
+                view.setOnTouchListener(new DragTouchListener());
+            }
+        }
     }
 
     // TouchListener for drag initiation
@@ -57,7 +85,7 @@ public class cleanbakingtin extends android.app.Activity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                // Create a ClipData holding the item's ID
+                // Create a ClipData holding the item's tag
                 ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
                 ClipData dragData = new ClipData(
                         (CharSequence) v.getTag(),
@@ -98,20 +126,20 @@ public class cleanbakingtin extends android.app.Activity {
                     View draggedView = (View) event.getLocalState();
                     String draggedTag = (String) draggedView.getTag();
 
+                    Log.d("TAG_CHECK", "Dragged tag: " + draggedTag);
+
                     if ("bakingtin".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(cleanbakingtin.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to cleanstrawberries activity
-                        Intent intent = new Intent(cleanbakingtin.this, cleanstrawberries.class);
-                        startActivity(intent);
+                        sayText("Correct! Moving to the next step.");
+                        navigateToNextStep();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(cleanbakingtin.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        sayText("This is not the right item. Try again.");
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            sayText("Let me help you!");
                             autoDropBakingTin();
                         }
                         return false;
@@ -122,8 +150,9 @@ public class cleanbakingtin extends android.app.Activity {
                     return true;
 
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
     }
 
@@ -131,9 +160,13 @@ public class cleanbakingtin extends android.app.Activity {
     private void autoDropBakingTin() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(cleanbakingtin.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(cleanbakingtin.this, cleanstrawberries.class);
-            startActivity(intent);
+            sayText("Let me help you! Moving to the next step.");
+            navigateToNextStep();
         }, 2000); // Delay to simulate "helping"
+    }
+
+    private void navigateToNextStep() {
+        Intent intent = new Intent(cleanbakingtin.this, cleanstrawberries.class);
+        startActivity(intent);
     }
 }

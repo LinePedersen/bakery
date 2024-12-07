@@ -12,13 +12,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 public class cleansugar extends android.app.Activity {
 
     private ImageView sugar, box;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private boolean isTransitioning = false; // Prevent multiple transitions
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,28 +32,45 @@ public class cleansugar extends android.app.Activity {
         // Initialize views
         sugar = findViewById(R.id.sugar);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         sugar.setTag("sugar");
-        findViewById(R.id.eggs).setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
-        findViewById(R.id.whisk).setTag("whisk");
         findViewById(R.id.strawberries).setTag("strawberries");
         findViewById(R.id.chocolate).setTag("chocolate");
         findViewById(R.id.bakingtin).setTag("bakingtin");
 
         // Set TouchListener for draggable items
         sugar.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.bakingtin).setOnTouchListener(new DragTouchListener());
 
         // Set DragListener for the target box
         box.setOnDragListener(new DragEventListener());
+    }
+
+    // When robot focus is gained, allow interaction with QiContext
+
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+        String initialText = explanation.getText().toString();
+        sayText(initialText); // Pepper speaks the initial text
+    }
+
+
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    // Helper method to make Pepper speak
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     // TouchListener for drag initiation
@@ -100,18 +121,23 @@ public class cleansugar extends android.app.Activity {
 
                     if ("sugar".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(cleansugar.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage);
+                        sayText(successMessage);
                         // Move to cleanbowl activity
-                        Intent intent = new Intent(cleansugar.this, cleanbowl.class);
-                        startActivity(intent);
+                        navigateToCleanBowl();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(cleansugar.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage);
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropSugar();
                         }
                         return false;
@@ -122,18 +148,36 @@ public class cleansugar extends android.app.Activity {
                     return true;
 
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
+    }
+
+    // Update the caption on the screen
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
     }
 
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropSugar() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(cleansugar.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(cleansugar.this, cleanbowl.class);
-            startActivity(intent);
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage);
+            sayText(autoDropMessage);
+            navigateToCleanBowl();
         }, 2000); // Delay to simulate "helping"
+    }
+
+    // Navigate to the next activity (cleanbowl)
+    private void navigateToCleanBowl() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        // Move to the next activity (cleanbowl)
+        Intent intent = new Intent(cleansugar.this, cleanbowl.class);
+        startActivity(intent);
+        finish(); // Ensure cleansugar is removed from the stack
     }
 }

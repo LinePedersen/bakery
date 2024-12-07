@@ -10,15 +10,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class addbakingtin extends android.app.Activity{
+public class addbakingtin extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView bowl, bakingtin;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +32,7 @@ public class addbakingtin extends android.app.Activity{
         // Initialize views
         bowl = findViewById(R.id.bowl);
         bakingtin = findViewById(R.id.bakingtin);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         bowl.setTag("bowl");
@@ -39,6 +43,37 @@ public class addbakingtin extends android.app.Activity{
 
         // Set DragListener for the target bakingtin
         bakingtin.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext; // Save the QiContext for later use
+
+        // Speak the text from the caption TextView when the activity starts
+        if (explanation != null) {
+            String captionText = explanation.getText().toString();
+            sayText(captionText);
+        }
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null; // Clear QiContext when focus is lost
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     // TouchListener for drag initiation
@@ -89,7 +124,10 @@ public class addbakingtin extends android.app.Activity{
 
                     if ("bowl".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(addbakingtin.this, "Great! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        String successMessage = "Great! Moving to the next step.";
+                        updateCaption(successMessage); // Update TextView
+                        sayText(successMessage); // Make Pepper say the message
+
                         // Move to oven activity
                         Intent intent = new Intent(addbakingtin.this, oven.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
@@ -99,10 +137,14 @@ public class addbakingtin extends android.app.Activity{
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addbakingtin.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage); // Update TextView
+                        sayText(failureMessage); // Make Pepper say the message
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropBowl();
                         }
                         return false;
@@ -119,11 +161,19 @@ public class addbakingtin extends android.app.Activity{
         }
     }
 
+    // Update the TextView content
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
+    }
+
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropBowl() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(addbakingtin.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage); // Update TextView
+            sayText(autoDropMessage); // Make Pepper say the message
+
             Intent intent = new Intent(addbakingtin.this, oven.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clear previous activities
             startActivity(intent);

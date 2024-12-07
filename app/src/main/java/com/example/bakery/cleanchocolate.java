@@ -5,20 +5,25 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class cleanchocolate extends android.app.Activity {
+public class cleanchocolate extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView chocolate, box;
-    private TextView explanation;
-    private int wrongAttempts = 0; // Counter for wrong attempts
+    private int wrongAttempts = 0;
+    private boolean isTransitioning = false; // Prevent multiple transitions
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,31 +33,61 @@ public class cleanchocolate extends android.app.Activity {
         // Initialize views
         chocolate = findViewById(R.id.chocolate);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
 
-        // Set tags for views (if not already set in XML)
+        // Initialize touch and drag listeners
+        initializeDragAndDrop();
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+
+        // Speak the initial instructions (hard-coded or pre-defined)
+        sayText("Please clean up the chocolate by dragging it into the box.");
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
+    }
+
+    private void initializeDragAndDrop() {
+        // Set tags for draggable items
         chocolate.setTag("chocolate");
-        findViewById(R.id.bowl).setTag("bowl");
-        findViewById(R.id.eggs).setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
-        findViewById(R.id.whisk).setTag("whisk");
         findViewById(R.id.strawberries).setTag("strawberries");
-        findViewById(R.id.sugar).setTag("sugar");
+        findViewById(R.id.bakingtin).setTag("bakingtin");
 
         // Set TouchListener for draggable items
-        chocolate.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.bowl).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
+        setDraggableListeners(R.id.chocolate, R.id.strawberries, R.id.bakingtin);
 
         // Set DragListener for the target box
         box.setOnDragListener(new DragEventListener());
     }
 
-    // TouchListener for drag initiation
+    private void setDraggableListeners(int... viewIds) {
+        for (int id : viewIds) {
+            View view = findViewById(id);
+            if (view != null) {
+                view.setOnTouchListener(new DragTouchListener());
+            }
+        }
+    }
+
     private class DragTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -65,8 +100,8 @@ public class cleanchocolate extends android.app.Activity {
                         item);
 
                 // Create and start the drag
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(v);
-                v.startDrag(dragData, myShadow, v, 0); // Use startDrag for API 23
+                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                v.startDrag(dragData, shadowBuilder, v, 0);
 
                 // Perform click for accessibility compliance
                 v.performClick();
@@ -76,49 +111,47 @@ public class cleanchocolate extends android.app.Activity {
         }
     }
 
-    // DragListener for handling drop events
     private class DragEventListener implements View.OnDragListener {
         @Override
         public boolean onDrag(View v, DragEvent event) {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    // Accept drag only for plain text
                     return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setAlpha(0.5f); // Highlight the target
+                    v.setAlpha(0.5f);
                     return true;
 
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setAlpha(1.0f); // Remove highlight
+                    v.setAlpha(1.0f);
                     return true;
 
                 case DragEvent.ACTION_DROP:
-                    // Retrieve the dragged view's tag
                     View draggedView = (View) event.getLocalState();
                     String draggedTag = (String) draggedView.getTag();
 
                     if ("chocolate".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(cleanchocolate.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to cleanbakingtin activity
-                        Intent intent = new Intent(cleanchocolate.this, cleanbakingtin.class);
-                        startActivity(intent);
+                        String successMessage = "Correct! Moving to the next step.";
+                        sayText(successMessage);
+                        navigateToNextStep();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(cleanchocolate.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            sayText(helpMessage);
                             autoDropChocolate();
                         }
                         return false;
                     }
 
                 case DragEvent.ACTION_DRAG_ENDED:
-                    v.setAlpha(1.0f); // Reset target highlight
+                    v.setAlpha(1.0f);
                     return true;
 
                 default:
@@ -127,13 +160,24 @@ public class cleanchocolate extends android.app.Activity {
         }
     }
 
-    // Handle "auto-drop" by simulating the correct outcome
     private void autoDropChocolate() {
         new Handler().postDelayed(() -> {
-            // Directly call the success logic
-            Toast.makeText(cleanchocolate.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(cleanchocolate.this, cleanbakingtin.class);
-            startActivity(intent);
-        }, 2000); // Delay to simulate "helping"
+            if (!isTransitioning) {
+                String autoDropMessage = "Let me help you! Moving to the next step.";
+                sayText(autoDropMessage);
+                navigateToNextStep();
+            }
+        }, 2000);
+    }
+
+    private void navigateToNextStep() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        Log.d("ActivityTransition", "Navigating to cleanbakingtin");
+        Intent intent = new Intent(cleanchocolate.this, cleanbakingtin.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

@@ -28,12 +28,10 @@ public class cleanwhisk extends android.app.Activity {
         // Initialize views
         whisk = findViewById(R.id.whisk);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         whisk.setTag("whisk");
-        findViewById(R.id.eggs).setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
         findViewById(R.id.sugar).setTag("sugar");
         findViewById(R.id.strawberries).setTag("strawberries");
         findViewById(R.id.chocolate).setTag("chocolate");
@@ -41,8 +39,6 @@ public class cleanwhisk extends android.app.Activity {
 
         // Set TouchListener for draggable items
         whisk.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
         findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());

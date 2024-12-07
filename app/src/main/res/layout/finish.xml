@@ -6,21 +6,6 @@
     android:layout_height="match_parent">
 
 
-    <TextView
-        android:id="@+id/explanation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thank you for the help. Cannot wait showing the cake to my friends"
-        android:textColor="#000000"
-        android:textSize="22sp"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.134"
-        tools:ignore="HardcodedText" />
 
 
     <ImageView
@@ -34,6 +19,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/kitchen" />
+
+    <TextView
+        android:id="@+id/caption"
+        android:layout_width="350dp"
+        android:layout_height="120dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_background"
+        android:gravity="center"
+        android:padding="18dp"
+        android:text="Thank you for the help. I look forward to share it with my friends. I hope to see you again soon"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.095"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.116" />
+
+    <TextView
+        android:id="@+id/danishcaption"
+        android:layout_width="350dp"
+        android:layout_height="120dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/rounded_background"
+        android:gravity="center"
+        android:padding="18dp"
+        android:text="Tak for hjælpen. Jeg glæder mig til at dele den med mine venner. Jeg håber vi ses igen snart"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="@+id/kitchen"
+        app:layout_constraintEnd_toEndOf="@+id/kitchen"
+        app:layout_constraintHorizontal_bias="0.909"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.109" />
 
 
     <ImageView

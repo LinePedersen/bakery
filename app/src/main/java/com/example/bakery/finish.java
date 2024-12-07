@@ -13,23 +13,13 @@ import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class sugar extends RobotActivity implements RobotLifecycleCallbacks{
-
+public class finish extends RobotActivity implements RobotLifecycleCallbacks {
     private QiContext qiContext;
 
-    //sugar to flour
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sugar);
-        Button next = (Button) findViewById(R.id.next);
-
-        next.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                Intent flour = new Intent (sugar.this, flour.class);
-                startActivity(flour);
-            }
-        });
-}
+        setContentView(R.layout.finish); // Ensure the layout is named "finish.xml"
+    }
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {

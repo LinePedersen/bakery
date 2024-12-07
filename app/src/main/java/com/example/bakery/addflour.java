@@ -14,11 +14,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Say;
+
 public class addflour extends android.app.Activity {
 
     private ImageView flour, bowl;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private boolean isTransitioning = false; // Prevent multiple transitions
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +35,7 @@ public class addflour extends android.app.Activity {
         // Initialize views
         flour = findViewById(R.id.flour);
         bowl = findViewById(R.id.bowl);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         flour.setTag("flour");
@@ -50,6 +57,27 @@ public class addflour extends android.app.Activity {
 
         // Set DragListener for the target bowl
         bowl.setOnDragListener(new DragEventListener());
+    }
+
+
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+        String initialText = explanation.getText().toString();
+        sayText(initialText); // Pepper speaks the initial text
+    }
+
+
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     // TouchListener for drag initiation
@@ -100,18 +128,23 @@ public class addflour extends android.app.Activity {
 
                     if ("flour".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(addflour.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage);
+                        sayText(successMessage);
                         // Move to addstrawberries activity
-                        Intent intent = new Intent(addflour.this, addstrawberries.class);
-                        startActivity(intent);
+                        navigateToAddStrawberries();
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addflour.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage);
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropFlour();
                         }
                         return false;
@@ -128,13 +161,28 @@ public class addflour extends android.app.Activity {
         }
     }
 
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
+    }
+
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropFlour() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(addflour.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(addflour.this, addstrawberries.class);
-            startActivity(intent);
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage);
+            sayText(autoDropMessage);
+            navigateToAddStrawberries();
         }, 2000); // Delay to simulate "helping"
+    }
+
+    private void navigateToAddStrawberries() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        // Move to the next activity (addstrawberries)
+        Intent intent = new Intent(addflour.this, addstrawberries.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -11,16 +11,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class addeggs extends AppCompatActivity {
+public class addeggs extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView eggs, bowl;
     private TextView explanation;
     private int wrongAttempts = 0;
     private boolean isTransitioning = false; // Prevent multiple transitions
+    private QiContext qiContext; // QiContext for robot interaction
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +34,41 @@ public class addeggs extends AppCompatActivity {
         // Initialize views
         eggs = findViewById(R.id.eggs);
         bowl = findViewById(R.id.bowl);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Initialize touch and drag listeners
         initializeDragAndDrop();
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+
+        // Speak the initial instructions from the TextView
+        if (explanation != null) {
+            String captionText = explanation.getText().toString();
+            sayText(captionText);
+        }
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
     }
 
     private void initializeDragAndDrop() {
@@ -105,15 +140,21 @@ public class addeggs extends AppCompatActivity {
                     String draggedTag = (String) draggedView.getTag();
 
                     if ("eggs".equals(draggedTag)) {
-                        Toast.makeText(addeggs.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage);
+                        sayText(successMessage);
                         navigateToWhisk();
                         return true;
                     } else {
                         wrongAttempts++;
-                        Toast.makeText(addeggs.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage);
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropEggs();
                         }
                         return false;
@@ -129,23 +170,29 @@ public class addeggs extends AppCompatActivity {
         }
     }
 
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
+    }
+
     private void autoDropEggs() {
         new Handler().postDelayed(() -> {
             if (!isTransitioning) {
-                Toast.makeText(addeggs.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                String autoDropMessage = "Let me help you! Moving to the next step.";
+                updateCaption(autoDropMessage);
+                sayText(autoDropMessage);
                 navigateToWhisk();
             }
         }, 2000);
     }
 
     private void navigateToWhisk() {
-        if (isTransitioning) return; // Prevent multiple transitions
+        if (isTransitioning) return;
         isTransitioning = true;
 
         Log.d("ActivityTransition", "Navigating to whisk1");
         Intent intent = new Intent(addeggs.this, whisk1.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish(); // Close the current activity
+        finish();
     }
 }

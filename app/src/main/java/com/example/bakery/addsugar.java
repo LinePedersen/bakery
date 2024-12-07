@@ -11,15 +11,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class addsugar extends android.app.Activity {
+public class addsugar extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView sugar, bowl;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for Pepper's speech
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +33,7 @@ public class addsugar extends android.app.Activity {
         // Initialize views
         sugar = findViewById(R.id.sugar);
         bowl = findViewById(R.id.bowl);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         sugar.setTag("sugar");
@@ -41,16 +45,50 @@ public class addsugar extends android.app.Activity {
         findViewById(R.id.bakingtin).setTag("bakingtin");
 
         // Set TouchListener for draggable items
-        sugar.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.bakingtin).setOnTouchListener(new DragTouchListener());
+        setDraggableListeners(R.id.sugar, R.id.eggs, R.id.flour, R.id.strawberries, R.id.chocolate, R.id.whisk, R.id.bakingtin);
 
         // Set DragListener for the target bowl
         bowl.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+
+        // Speak the initial instructions from the TextView
+        if (explanation != null) {
+            String captionText = explanation.getText().toString();
+            sayText(captionText);
+        }
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
+    }
+
+    private void setDraggableListeners(int... viewIds) {
+        for (int id : viewIds) {
+            View view = findViewById(id);
+            if (view != null) {
+                view.setOnTouchListener(new DragTouchListener());
+            }
+        }
     }
 
     // TouchListener for drag initiation
@@ -104,7 +142,10 @@ public class addsugar extends android.app.Activity {
 
                     if ("sugar".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(addsugar.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage);
+                        sayText(successMessage);
+
                         // Move to AddEggs activity
                         Intent intent = new Intent(addsugar.this, addeggs.class);
                         startActivity(intent);
@@ -112,10 +153,14 @@ public class addsugar extends android.app.Activity {
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(addsugar.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage);
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropSugar();
                         }
                         return false;
@@ -132,11 +177,19 @@ public class addsugar extends android.app.Activity {
         }
     }
 
+    // Helper method to update the TextView caption
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
+    }
+
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropSugar() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(addsugar.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage);
+            sayText(autoDropMessage);
+
             Intent intent = new Intent(addsugar.this, addeggs.class);
             startActivity(intent);
         }, 2000); // Delay to simulate "helping"

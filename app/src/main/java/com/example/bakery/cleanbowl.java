@@ -5,20 +5,25 @@ import android.content.ClipDescription;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
-public class cleanbowl extends android.app.Activity {
+public class cleanbowl extends RobotActivity implements RobotLifecycleCallbacks {
 
     private ImageView bowl, box;
     private TextView explanation;
     private int wrongAttempts = 0; // Counter for wrong attempts
+    private QiContext qiContext; // QiContext for Pepper's speech
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,28 +33,58 @@ public class cleanbowl extends android.app.Activity {
         // Initialize views
         bowl = findViewById(R.id.bowl);
         box = findViewById(R.id.box);
-        explanation = findViewById(R.id.explanation);
+        explanation = findViewById(R.id.caption);
 
         // Set tags for views (if not already set in XML)
         bowl.setTag("bowl");
-        findViewById(R.id.eggs).setTag("eggs");
-        findViewById(R.id.flour).setTag("flour");
-        findViewById(R.id.whisk).setTag("whisk");
         findViewById(R.id.strawberries).setTag("strawberries");
         findViewById(R.id.chocolate).setTag("chocolate");
-        findViewById(R.id.sugar).setTag("sugar");
 
         // Set TouchListener for draggable items
-        bowl.setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.eggs).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.flour).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.whisk).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.strawberries).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.chocolate).setOnTouchListener(new DragTouchListener());
-        findViewById(R.id.sugar).setOnTouchListener(new DragTouchListener());
+        setDraggableListeners(R.id.strawberries, R.id.chocolate);
 
         // Set DragListener for the target box
         box.setOnDragListener(new DragEventListener());
+    }
+
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        this.qiContext = qiContext;
+
+        // Speak the initial instructions from the TextView
+        if (explanation != null) {
+            String captionText = explanation.getText().toString();
+            sayText(captionText);
+        }
+    }
+
+    @Override
+    public void onRobotFocusLost() {
+        this.qiContext = null;
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+        // Handle focus refusal if needed
+    }
+
+    // Helper method to make Pepper speak a given text
+    private void sayText(String text) {
+        if (qiContext != null) {
+            Say say = SayBuilder.with(qiContext)
+                    .withText(text)
+                    .build();
+            say.run();
+        }
+    }
+
+    private void setDraggableListeners(int... viewIds) {
+        for (int id : viewIds) {
+            View view = findViewById(id);
+            if (view != null) {
+                view.setOnTouchListener(new DragTouchListener());
+            }
+        }
     }
 
     // TouchListener for drag initiation
@@ -57,7 +92,7 @@ public class cleanbowl extends android.app.Activity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                // Create a ClipData holding the item's ID
+                // Create a ClipData holding the item's tag
                 ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
                 ClipData dragData = new ClipData(
                         (CharSequence) v.getTag(),
@@ -98,20 +133,30 @@ public class cleanbowl extends android.app.Activity {
                     View draggedView = (View) event.getLocalState();
                     String draggedTag = (String) draggedView.getTag();
 
+                    // Debugging Log
+                    Log.d("TAG_CHECK", "Dragged tag: " + draggedTag);
+
                     if ("bowl".equals(draggedTag)) {
                         // Correct item
-                        Toast.makeText(cleanbowl.this, "Correct! Moving to the next step.", Toast.LENGTH_SHORT).show();
-                        // Move to cleanchocolate activity
+                        String successMessage = "Correct! Moving to the next step.";
+                        updateCaption(successMessage);
+                        sayText(successMessage);
+
+                        // Move to the next activity (for example, cleanchocolate)
                         Intent intent = new Intent(cleanbowl.this, cleanchocolate.class);
                         startActivity(intent);
                         return true;
                     } else {
                         // Incorrect item
                         wrongAttempts++;
-                        Toast.makeText(cleanbowl.this, "This is not the right item. Try again.", Toast.LENGTH_SHORT).show();
+                        String failureMessage = "This is not the right item. Try again.";
+                        updateCaption(failureMessage);
+                        sayText(failureMessage);
 
                         if (wrongAttempts >= 3) {
-                            explanation.setText("Let me help you!");
+                            String helpMessage = "Let me help you!";
+                            updateCaption(helpMessage);
+                            sayText(helpMessage);
                             autoDropBowl();
                         }
                         return false;
@@ -122,16 +167,25 @@ public class cleanbowl extends android.app.Activity {
                     return true;
 
                 default:
-                    return false;
+                    break;
             }
+            return false;
         }
+    }
+
+    // Helper method to update the TextView caption
+    private void updateCaption(String text) {
+        runOnUiThread(() -> explanation.setText(text)); // Ensure this runs on the main thread
     }
 
     // Handle "auto-drop" by simulating the correct outcome
     private void autoDropBowl() {
         new Handler().postDelayed(() -> {
             // Directly call the success logic
-            Toast.makeText(cleanbowl.this, "Let me help you! Moving to the next step.", Toast.LENGTH_SHORT).show();
+            String autoDropMessage = "Let me help you! Moving to the next step.";
+            updateCaption(autoDropMessage);
+            sayText(autoDropMessage);
+
             Intent intent = new Intent(cleanbowl.this, cleanchocolate.class);
             startActivity(intent);
         }, 2000); // Delay to simulate "helping"
